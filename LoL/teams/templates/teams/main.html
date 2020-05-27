@@ -1,0 +1,11 @@
+{% extends "teams/base.html" %}
+{% block content %}
+    <h1>Teams</h1>
+    <a></a>
+    <table>
+        {% for team in teams %}
+            <h1>{{team.teamname}}</h1>
+            <p>{{team.teammembers}}</p>
+        {% endfor %}
+    </table>
+{% endblock content %}
