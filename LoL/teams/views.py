@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.generic import ListView, CreateView
+from .models import Teams
 
 # Create your views here.
 
-teams = [
+teamsize=0
+teamamount=0
+
+teamA = [
     {
         'teamname': 'pp',
         'teammembers': 'Dude 1'
@@ -26,17 +31,42 @@ teams = [
 ]
 
 def home(request):
+
+    print(request.POST)
+    if(request.method == 'POST'):
+        global teamsize
+        global teamamount
+        teamsize = int(request.POST.get('teamsize'))
+        teamamount = int(request.POST.get('teamamount'))
     context = {
-        'teams': teams
+        'teamsize':teamsize,
+        'teamamount':teamamount,
+        'amountofdudes': teamsize*teamamount
     }
     return render(request, 'teams/main.html', context)
 
-def setTeamSize(request):
-    if request.method== 'POST':
-        teams = request.Post.get('teamsize')
-        print(teams)
-    
-    return render (request, 'teams/main.html',{'teams': teams} )
+def teams(request):
+    print(request.POST)
+    global teamsize
+    global teamamount
+    context = {
+        'teamsize':teamsize,
+        'teamamount':teamamount,
+        'amountofdudes': teamsize*teamamount
+    }
+    return render(request, 'teams/main.html', context)
+
+
+class PostTeamSize(ListView):
+   
+    Teams.objects.all().delete()
+    model = Teams
+    template_name = 'teams/main.html' #<app>/<model>_<viewtype>.html
+    context_object_name = 'teams'
+
+class CreateTeamSize(CreateView):
+    model = Teams
+    fields=['teamsize','teamamount']
 
 def about(request):
     return HttpResponse('<h1>pipi</h1>')
