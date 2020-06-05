@@ -1,0 +1,23 @@
+{% extends "teams/base.html" %}
+{% block content %}
+    <div class="container">
+    <br>
+    <div class="row">
+    {% for team in teams %}
+        <br></br>
+        <div class="col-sm">
+        <div class="card text-white bg-dark">
+         <div class="card-header text-center"><h2>Team {{ forloop.counter }}</h2></div>
+         {% for member in team.members %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark">{{ member }}</li>
+            </ul>
+         {% endfor %}
+        </div>
+        </div>
+    {% endfor %}
+    </div>
+    <br>
+    <a style="float: right" href="{% url 'team-roll' %}" class="btn btn-secondary"> <img src="https://image.flaticon.com/icons/png/512/653/653827.png" height="30" width="30"><br>reroll</a>
+    </div>
+{% endblock content %}

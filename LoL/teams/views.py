@@ -1,37 +1,31 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import ListView, CreateView
 from .models import Teams
+from .teamcreator import splitTeams
+
 
 # Create your views here.
 
 teamsize=0
 teamamount=0
-
-teamA = [
-    {
-        'teamname': 'pp',
-        'teammembers': 'Dude 1'
-    },{
-        'teamname': 'pp2',
-        'teammembers': 'Dude 2'
-    },
-    {
-        'teamname': 'pp2',
-        'teammembers': 'Dude 3'
-    },
-    {
-        'teamname': 'pp2',
-        'teammembers': 'Dude 4'
-    },
-    {
-        'teamname': 'pp2',
-        'teammembers': 'Dude 5'
-    },
-]
+teamlist=[]
 
 def home(request):
+    global teamsize
+    global teamamount
+    if(request.method == 'POST'):
+        teamsize = int(request.POST.get('teamsize'))
+        teamamount = int(request.POST.get('teamamount'))
 
+    context={
+        'teamsize':teamsize,
+        'teamamount':teamamount,
+        'amountofdudes': teamsize*teamamount
+    }
+    return render(request, 'teams/main.html', context)
+
+def size(request):
     print(request.POST)
     if(request.method == 'POST'):
         global teamsize
@@ -43,30 +37,38 @@ def home(request):
         'teamamount':teamamount,
         'amountofdudes': teamsize*teamamount
     }
-    return render(request, 'teams/main.html', context)
 
-def teams(request):
+    return render(request, 'teams/test.html',context)
+
+
+def teamview(request):
     print(request.POST)
     global teamsize
     global teamamount
+    global teamlist 
+    teamlist = list(request.POST.getlist('teammembers'))
+    teammembers = splitTeams(teamlist,teamsize,teamamount)
+    
     context = {
         'teamsize':teamsize,
         'teamamount':teamamount,
-        'amountofdudes': teamsize*teamamount
+        'amountofdudes': teamsize*teamamount,
+        'teams': teammembers
     }
-    return render(request, 'teams/main.html', context)
+    return render(request, 'teams/teamview.html', context)
 
-
-class PostTeamSize(ListView):
-   
-    Teams.objects.all().delete()
-    model = Teams
-    template_name = 'teams/main.html' #<app>/<model>_<viewtype>.html
-    context_object_name = 'teams'
-
-class CreateTeamSize(CreateView):
-    model = Teams
-    fields=['teamsize','teamamount']
+def reroll(request):
+    global teamsize
+    global teamamount
+    print(teamlist)
+    teammembers = splitTeams(teamlist,teamsize,teamamount)
+    context = {
+        'teamsize':teamsize,
+        'teamamount':teamamount,
+        'amountofdudes': teamsize*teamamount,
+        'teams': teammembers
+    }
+    return render(request, 'teams/teamview.html', context)
 
 def about(request):
     return HttpResponse('<h1>pipi</h1>')
